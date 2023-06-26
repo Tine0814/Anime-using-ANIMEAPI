@@ -1,20 +1,40 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 function Hero() {
+  const [newData, setNewData] = useState(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch("https://kitsu.io/api/edge/anime");
+        const jsonData = await response.json();
+        setNewData(jsonData.data || []); // Ensure newData is an array
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  console.log(newData);
+
   return (
-    <section className="w-full ml-20  p-5 flex gap-4 flex-wrap">
-      <div className="bg-[#19376D] rounded-xl w-[280px] h-[300px] text-center flex items-center flex-col gap-4 ">
-        <div className="w-[220px] h-[210px] flex justify-center items-center mt-[2rem] ">
-          <div className="  w-full h-full rounded-2xl flex items-center justify-center ">
-            <img
-              className=" rounded-xl max-w-full max-h-full shadow-2xl"
-              src="https://images.saatchiart.com/saatchi/1755977/art/8291898/7356904-HSC00002-7.jpg"
-              alt=""
-            />
+    <section className="w-full ml-20 p-5 flex gap-4 flex-wrap">
+      {newData &&
+        newData.map((anime, index) => (
+          <div
+            key={index}
+            className="bg-[#19376D] rounded-xl w-[280px] p-5 text-center flex items-center flex-col gap-4"
+          >
+            <div className="w-[220px] flex justify-center ">
+              <div className="w-full h-full overflow-hidden rounded-2xl flex items-center justify-center">
+                <img src={anime.attributes.posterImage.original} alt="" />
+              </div>
+              {/* <div className="bg-red-200 w-full"></div> */}
+            </div>
           </div>
-        </div>
-        <h1>Anime</h1>
-      </div>
+        ))}
     </section>
   );
 }
